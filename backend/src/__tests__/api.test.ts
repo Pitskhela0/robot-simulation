@@ -4,7 +4,8 @@ import request from 'supertest';
 import express from 'express';
 import cors from 'cors';
 import { pool } from '../db';
-import { setupTestDatabase, cleanupTestDatabase, closeTestDatabase, dropAllTables } from '../db/test-setup';
+import { MigrationRunner } from '../db/migrate';
+import { cleanupTestDatabase, closeTestDatabase, dropAllTables, testPool } from '../db/test-setup';
 
 // Create test app (similar to your main app but for testing)
 const createTestApp = () => {
@@ -57,7 +58,11 @@ describe('API Endpoint Tests', () => {
   beforeAll(async () => {
     // Drop all tables first to ensure clean start
     await dropAllTables();
-    await setupTestDatabase();
+    
+    // Set up with migrations
+    const migrationRunner = new MigrationRunner(testPool);
+    await migrationRunner.runMigrations();
+    
     app = createTestApp();
   });
 

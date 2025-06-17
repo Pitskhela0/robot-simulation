@@ -18,8 +18,13 @@ describe('Migration Tests', () => {
   });
 
   beforeEach(async () => {
-    // Drop all tables to start fresh for each test
-    await dropAllTables();
+    // Drop all tables completely to start fresh for each test
+    await pool.query(`
+      DROP SCHEMA public CASCADE;
+      CREATE SCHEMA public;
+      GRANT ALL ON SCHEMA public TO postgres;
+      GRANT ALL ON SCHEMA public TO public;
+    `);
   });
 
   it('should create migrations table', async () => {
