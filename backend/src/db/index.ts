@@ -3,6 +3,7 @@
 import { Pool, QueryResult } from 'pg';
 import dotenv from 'dotenv';
 import path from 'path';
+import { MigrationRunner } from './migrate';
 
 // Ensure environment variables are loaded (robust check)
 // Use path.resolve relative to the project root (which is the parent of 'backend')
@@ -41,7 +42,6 @@ pool.on('release', client => {
     console.log('Database pool: Client released back to pool');
 });
 
-
 pool.on('error', (err: Error, client) => { // Explicitly typing err as Error can help here
   console.error('Database pool: Unexpected error on idle client', err);
   // Critical error, exit the process
@@ -74,9 +74,31 @@ async function testDatabaseConnection() {
   }
 }
 
-// Run the test function immediately when this module is imported
-testDatabaseConnection();
-// --- End async/await test ---
+// Initialize database with migrations
+async function initializeDatabase() {
+  const migrationRunner = new MigrationRunner(pool);
+  
+  try {
+    console.log('Running database migrations...');
+    await migrationRunner.runMigrations();
+    console.log('Database initialization completed successfully');
+  } catch (error) {
+    console.error('Database initialization failed:', error);
+    process.exit(1);
+  }
+}
 
-// Export the pool so index.ts (and other files) can use it
-export { pool };
+// Run the test function and migrations when this module is imported
+async function setupDatabase() {
+  await testDatabaseConnection();
+  
+  // Only run migrations if not in test environment
+  if (process.env.NODE_ENV !== 'test') {
+    await initializeDatabase();
+  }
+}
+
+setupDatabase();
+
+// Export the pool and migration runner so other files can use them
+export { pool, MigrationRunner };
