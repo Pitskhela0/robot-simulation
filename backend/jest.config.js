@@ -1,21 +1,17 @@
 // backend/jest.config.js
-
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  roots: ['<rootDir>/src'],
-  testMatch: ['**/__tests__/**/*.test.ts'],
-  transform: {
-    '^.+\\.ts$': 'ts-jest',
-  },
-  collectCoverageFrom: [
-    'src/**/*.ts',
-    '!src/**/*.d.ts',
-    '!src/__tests__/**',
-    '!src/scripts/**',
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "setupFilesAfterEnv": ["<rootDir>/src/__tests__/setup.ts"],
+  "testMatch": ["**/__tests__/**/*.test.ts"],
+  "collectCoverageFrom": [
+    "src/**/*.ts",
+    "!src/**/*.test.ts",
+    "!src/__tests__/**/*"
   ],
-  coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'html'],
-  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
-  testTimeout: 30000, // 30 seconds for database operations
-};
+  "testTimeout": 30000,
+  "maxWorkers": 1,
+  "forceExit": true,
+  "detectOpenHandles": true,
+  "globalTeardown": "<rootDir>/src/__tests__/teardown.ts"
+}

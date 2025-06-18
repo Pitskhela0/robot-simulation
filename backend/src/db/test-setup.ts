@@ -1,4 +1,4 @@
-// backend/src/db/test-setup.ts
+// backend/src/db/test-setup.ts - Updated version
 
 import { Pool } from 'pg';
 import { MigrationRunner } from './migrate';
@@ -22,8 +22,12 @@ export async function setupTestDatabase(): Promise<Pool> {
   try {
     console.log('Setting up test database...');
     
-    // For now, let's create tables directly instead of using migrations
-    await createTablesDirectly();
+    // Drop all tables and recreate schema
+    await dropAllTables();
+    
+    // Run migrations to create tables
+    const migrationRunner = new MigrationRunner(testPool);
+    await migrationRunner.runMigrations();
     
     console.log('Test database setup completed');
     return testPool;
@@ -33,78 +37,21 @@ export async function setupTestDatabase(): Promise<Pool> {
   }
 }
 
-// Create tables directly (bypass migration system for now)
-async function createTablesDirectly(): Promise<void> {
-  const createTablesSQL = `
-    CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        username VARCHAR(100) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        password_hash VARCHAR(255) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS simulations (
-        id SERIAL PRIMARY KEY,
-        user_id INTEGER,
-        name VARCHAR(255) NOT NULL,
-        description TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS robots (
-        id SERIAL PRIMARY KEY,
-        simulation_id INTEGER,
-        name VARCHAR(100) NOT NULL,
-        x_position INTEGER DEFAULT 0,
-        y_position INTEGER DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS tasks (
-        id SERIAL PRIMARY KEY,
-        simulation_id INTEGER,
-        robot_id INTEGER,
-        type VARCHAR(50) NOT NULL,
-        description TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS walls (
-        id SERIAL PRIMARY KEY,
-        simulation_id INTEGER,
-        x_position INTEGER NOT NULL,
-        y_position INTEGER NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS statistics (
-        id SERIAL PRIMARY KEY,
-        simulation_id INTEGER,
-        robot_id INTEGER,
-        metric_name VARCHAR(100) NOT NULL,
-        metric_value DECIMAL(10,2) NOT NULL,
-        recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `;
-
-  await testPool.query(createTablesSQL);
-}
-
-// Clean up test database - safer version that checks if tables exist
+// Clean up test database - only truncate data, keep tables
 export async function cleanupTestDatabase(): Promise<void> {
   try {
     // Get list of tables that actually exist
     const result = await testPool.query(`
       SELECT tablename FROM pg_tables 
       WHERE schemaname = 'public' 
-      AND tablename IN ('statistics', 'walls', 'tasks', 'robots', 'simulations', 'users', 'migrations')
+      AND tablename NOT IN ('migrations')
+      ORDER BY tablename
     `);
     
     const existingTables = result.rows.map(row => row.tablename);
     
     if (existingTables.length > 0) {
-      // Only truncate tables that exist
+      // Only truncate tables that exist, in correct order to handle foreign keys
       const cleanupSQL = `TRUNCATE TABLE ${existingTables.join(', ')} RESTART IDENTITY CASCADE;`;
       await testPool.query(cleanupSQL);
       console.log('Test database cleaned up');
@@ -117,17 +64,20 @@ export async function cleanupTestDatabase(): Promise<void> {
   }
 }
 
-// Drop all tables (for fresh start in migration tests)
+// Drop all tables AND sequences (for fresh start)
 export async function dropAllTables(): Promise<void> {
   try {
-    const dropSQL = `
-      DROP TABLE IF EXISTS statistics, walls, tasks, robots, simulations, users, migrations CASCADE;
-    `;
-    await testPool.query(dropSQL);
-    console.log('All tables dropped');
+    // First drop all tables (this will cascade and drop sequences)
+    await testPool.query(`
+      DROP SCHEMA public CASCADE;
+      CREATE SCHEMA public;
+      GRANT ALL ON SCHEMA public TO postgres;
+      GRANT ALL ON SCHEMA public TO public;
+    `);
+    console.log('Schema recreated (all tables and sequences dropped)');
   } catch (error) {
-    console.error('Failed to drop tables:', error);
-    // Don't throw - this is for cleanup
+    console.error('Failed to recreate schema:', error);
+    throw error; // This should fail if we can't set up the test environment
   }
 }
 

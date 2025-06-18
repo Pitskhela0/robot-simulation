@@ -1,5 +1,5 @@
 -- backend/src/db/migrations/001_initial_schema.sql
--- Simple initial database schema for robot simulation application
+-- Updated to handle conflicts better
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
@@ -79,16 +79,54 @@ CREATE TABLE IF NOT EXISTS statistics (
     metadata TEXT
 );
 
--- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_simulations_user_id ON simulations(user_id);
-CREATE INDEX IF NOT EXISTS idx_simulations_status ON simulations(status);
-CREATE INDEX IF NOT EXISTS idx_robots_simulation_id ON robots(simulation_id);
-CREATE INDEX IF NOT EXISTS idx_robots_position ON robots(x_position, y_position);
-CREATE INDEX IF NOT EXISTS idx_tasks_simulation_id ON tasks(simulation_id);
-CREATE INDEX IF NOT EXISTS idx_tasks_robot_id ON tasks(robot_id);
-CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
-CREATE INDEX IF NOT EXISTS idx_walls_simulation_id ON walls(simulation_id);
-CREATE INDEX IF NOT EXISTS idx_walls_position ON walls(x_position, y_position);
-CREATE INDEX IF NOT EXISTS idx_statistics_simulation_id ON statistics(simulation_id);
-CREATE INDEX IF NOT EXISTS idx_statistics_robot_id ON statistics(robot_id);
-CREATE INDEX IF NOT EXISTS idx_statistics_recorded_at ON statistics(recorded_at);
+-- Create indexes for better performance (only if they don't exist)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_simulations_user_id') THEN
+        CREATE INDEX idx_simulations_user_id ON simulations(user_id);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_simulations_status') THEN
+        CREATE INDEX idx_simulations_status ON simulations(status);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_robots_simulation_id') THEN
+        CREATE INDEX idx_robots_simulation_id ON robots(simulation_id);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_robots_position') THEN
+        CREATE INDEX idx_robots_position ON robots(x_position, y_position);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_tasks_simulation_id') THEN
+        CREATE INDEX idx_tasks_simulation_id ON tasks(simulation_id);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_tasks_robot_id') THEN
+        CREATE INDEX idx_tasks_robot_id ON tasks(robot_id);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_tasks_status') THEN
+        CREATE INDEX idx_tasks_status ON tasks(status);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_walls_simulation_id') THEN
+        CREATE INDEX idx_walls_simulation_id ON walls(simulation_id);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_walls_position') THEN
+        CREATE INDEX idx_walls_position ON walls(x_position, y_position);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_statistics_simulation_id') THEN
+        CREATE INDEX idx_statistics_simulation_id ON statistics(simulation_id);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_statistics_robot_id') THEN
+        CREATE INDEX idx_statistics_robot_id ON statistics(robot_id);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_statistics_recorded_at') THEN
+        CREATE INDEX idx_statistics_recorded_at ON statistics(recorded_at);
+    END IF;
+END $$;
