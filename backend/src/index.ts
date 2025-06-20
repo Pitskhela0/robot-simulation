@@ -6,6 +6,7 @@ import { pool } from './db'; // Import the database pool from your db module
 import simulationRoutes from './routes/simulation';
 import { Request, Response, NextFunction } from 'express';
 import robotRoutes from './routes/robots';
+import taskRoutes from './routes/tasks';
 
 
 
@@ -23,7 +24,8 @@ app.use(express.json()); // Parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
 app.use('/api/simulations', robotRoutes); // For simulation-based robot routes
 app.use('/api', robotRoutes); // For direct robot routes
-
+app.use('/api/simulations', taskRoutes); // For simulation-based task routes
+app.use('/api', taskRoutes); // For direct task routes
 
 // Basic root route (Optional, good for testing server is live)
 app.get('/', (_req, res) => {

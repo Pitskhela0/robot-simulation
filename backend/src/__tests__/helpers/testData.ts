@@ -3,6 +3,7 @@
 import { Pool } from 'pg';
 import { SimulationData } from '../../models/Simulation';
 import { RobotData, RobotVersion, RobotStatus } from '../../models/Robot';
+import { TaskData, TaskType, TaskStatus } from '../../models/Task';
 
 export class TestDataHelper {
   private pool: Pool;
@@ -167,9 +168,94 @@ export class TestDataHelper {
     return robots;
   }
 
+  // Create a test task
+  async createTestTask(simulation_id: number, taskData: Partial<TaskData> = {}): Promise<TaskData> {
+    const {
+      type = TaskType.PICKUP,
+      description = 'Test task',
+      target_x = 0,
+      target_y = 0,
+      priority = 1,
+      status = TaskStatus.PENDING,
+      robot_id = null
+    } = taskData;
+
+    const query = `
+      INSERT INTO tasks (simulation_id, robot_id, type, description, target_x, target_y, priority, status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *
+    `;
+
+    const result = await this.pool.query(query, [
+      simulation_id, robot_id, type, description, target_x, target_y, priority, status
+    ]);
+    return result.rows[0];
+  }
+
+  // Create multiple test tasks
+  async createMultipleTasks(simulation_id: number, count: number): Promise<TaskData[]> {
+    const tasks = [];
+    const types = [TaskType.PICKUP, TaskType.PUTDOWN, TaskType.CLEANING, TaskType.INSPECTION];
+    const statuses = [TaskStatus.PENDING, TaskStatus.ASSIGNED, TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED];
+    
+    for (let i = 1; i <= count; i++) {
+      const type = types[i % types.length];
+      const status = statuses[i % statuses.length];
+      
+      const task = await this.createTestTask(simulation_id, {
+        type,
+        description: `Test task ${i}`,
+        target_x: i % 10,
+        target_y: Math.floor(i / 10),
+        priority: (i % 5) + 1, // Priority 1-5
+        status
+      });
+      tasks.push(task);
+    }
+
+    return tasks;
+  }
+
+  // Create tasks with specific types
+  async createTasksWithTypes(simulation_id: number, types: TaskType[]): Promise<TaskData[]> {
+    const tasks = [];
+    
+    for (let i = 0; i < types.length; i++) {
+      const type = types[i];
+      const task = await this.createTestTask(simulation_id, {
+        type,
+        description: `${type} task ${i + 1}`,
+        target_x: i,
+        target_y: 0
+      });
+      tasks.push(task);
+    }
+
+    return tasks;
+  }
+
+  // Create tasks with specific statuses
+  async createTasksWithStatuses(simulation_id: number, statuses: TaskStatus[]): Promise<TaskData[]> {
+    const tasks = [];
+    
+    for (let i = 0; i < statuses.length; i++) {
+      const status = statuses[i];
+      const task = await this.createTestTask(simulation_id, {
+        description: `${status} task ${i + 1}`,
+        target_x: i,
+        target_y: 0,
+        status
+      });
+      tasks.push(task);
+    }
+
+    return tasks;
+  }
+
   // Clean up test data
   async cleanupTestData(): Promise<void> {
     // Clean in reverse order due to foreign key constraints
+    await this.pool.query('DELETE FROM tasks');
     await this.pool.query('DELETE FROM robots');
     await this.pool.query('DELETE FROM simulations');
     await this.pool.query('DELETE FROM users');
@@ -205,9 +291,27 @@ export class TestDataHelper {
     return parseInt(result.rows[0].count);
   }
 
-  // Get robot count by status
-  async getRobotCountByStatus(status: RobotStatus): Promise<number> {
-    const result = await this.pool.query('SELECT COUNT(*) as count FROM robots WHERE status = $1', [status]);
+  // Get task count
+  async getTaskCount(): Promise<number> {
+    const result = await this.pool.query('SELECT COUNT(*) as count FROM tasks');
+    return parseInt(result.rows[0].count);
+  }
+
+  // Get task count by simulation
+  async getTaskCountBySimulation(simulation_id: number): Promise<number> {
+    const result = await this.pool.query('SELECT COUNT(*) as count FROM tasks WHERE simulation_id = $1', [simulation_id]);
+    return parseInt(result.rows[0].count);
+  }
+
+  // Get task count by type
+  async getTaskCountByType(type: TaskType): Promise<number> {
+    const result = await this.pool.query('SELECT COUNT(*) as count FROM tasks WHERE type = $1', [type]);
+    return parseInt(result.rows[0].count);
+  }
+
+  // Get task count by status
+  async getTaskCountByStatus(status: TaskStatus): Promise<number> {
+    const result = await this.pool.query('SELECT COUNT(*) as count FROM tasks WHERE status = $1', [status]);
     return parseInt(result.rows[0].count);
   }
 }
