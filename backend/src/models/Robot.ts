@@ -49,7 +49,7 @@ export interface RobotData {
   y_position: number;
   direction?: string;
   battery_level: number;
-  status: RobotStatus;
+  status?: RobotStatus; // Make status optional in interface
   color?: string;
   created_at?: Date;
   updated_at?: Date;
@@ -89,7 +89,7 @@ export class Robot {
       y_position,
       direction = 'north',
       battery_level,
-      status = RobotStatus.IDLE,
+      status = RobotStatus.IDLE, // Default status if not provided
       color = '#3B82F6'
     } = robotData;
 
