@@ -7,6 +7,7 @@ import simulationRoutes from './routes/simulation';
 import { Request, Response, NextFunction } from 'express';
 import robotRoutes from './routes/robots';
 import taskRoutes from './routes/tasks';
+import wallRoutes from './routes/walls';
 
 
 
@@ -26,6 +27,8 @@ app.use('/api/simulations', robotRoutes); // For simulation-based robot routes
 app.use('/api', robotRoutes); // For direct robot routes
 app.use('/api/simulations', taskRoutes); // For simulation-based task routes
 app.use('/api', taskRoutes); // For direct task routes
+app.use('/api/simulations', wallRoutes); // For simulation-based wall routes
+app.use('/api', wallRoutes); // For direct wall routes
 
 // Basic root route (Optional, good for testing server is live)
 app.get('/', (_req, res) => {

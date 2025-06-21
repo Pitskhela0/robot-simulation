@@ -4,6 +4,7 @@ import { Pool } from 'pg';
 import { SimulationData } from '../../models/Simulation';
 import { RobotData, RobotVersion, RobotStatus } from '../../models/Robot';
 import { TaskData, TaskType, TaskStatus } from '../../models/Task';
+import { WallData, WallType } from '../../models/Wall';
 
 export class TestDataHelper {
   private pool: Pool;
@@ -252,9 +253,90 @@ export class TestDataHelper {
     return tasks;
   }
 
+  // Create a test wall
+  async createTestWall(simulation_id: number, wallData: Partial<WallData> = {}): Promise<WallData> {
+    const {
+      x_position = 1,
+      y_position = 1,
+      type = WallType.WALL
+    } = wallData;
+
+    const query = `
+      INSERT INTO walls (simulation_id, x_position, y_position, type)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+    `;
+
+    const result = await this.pool.query(query, [
+      simulation_id, x_position, y_position, type
+    ]);
+    return result.rows[0];
+  }
+
+  // Create multiple test walls
+  async createMultipleWalls(simulation_id: number, count: number): Promise<WallData[]> {
+    const walls = [];
+    const types = [WallType.WALL, WallType.BARRIER, WallType.OBSTACLE];
+    
+    for (let i = 1; i <= count; i++) {
+      const type = types[i % types.length];
+      
+      const wall = await this.createTestWall(simulation_id, {
+        x_position: i,
+        y_position: i,
+        type
+      });
+      walls.push(wall);
+    }
+
+    return walls;
+  }
+
+  // Create walls in a pattern (useful for testing pathfinding)
+  async createWallPattern(simulation_id: number, pattern: 'line' | 'box' | 'maze'): Promise<WallData[]> {
+    const walls = [];
+    
+    switch (pattern) {
+      case 'line':
+        // Create horizontal line of walls
+        for (let x = 2; x <= 5; x++) {
+          const wall = await this.createTestWall(simulation_id, { x_position: x, y_position: 3 });
+          walls.push(wall);
+        }
+        break;
+        
+      case 'box':
+        // Create box pattern
+        for (let x = 2; x <= 5; x++) {
+          walls.push(await this.createTestWall(simulation_id, { x_position: x, y_position: 2 }));
+          walls.push(await this.createTestWall(simulation_id, { x_position: x, y_position: 5 }));
+        }
+        for (let y = 3; y <= 4; y++) {
+          walls.push(await this.createTestWall(simulation_id, { x_position: 2, y_position: y }));
+          walls.push(await this.createTestWall(simulation_id, { x_position: 5, y_position: y }));
+        }
+        break;
+        
+      case 'maze':
+        // Create simple maze pattern
+        const mazeCoords = [
+          [1, 1], [1, 3], [1, 5],
+          [3, 1], [3, 2], [3, 4],
+          [5, 2], [5, 3], [5, 5]
+        ];
+        for (const [x, y] of mazeCoords) {
+          walls.push(await this.createTestWall(simulation_id, { x_position: x, y_position: y }));
+        }
+        break;
+    }
+    
+    return walls;
+  }
+
   // Clean up test data
   async cleanupTestData(): Promise<void> {
     // Clean in reverse order due to foreign key constraints
+    await this.pool.query('DELETE FROM walls');
     await this.pool.query('DELETE FROM tasks');
     await this.pool.query('DELETE FROM robots');
     await this.pool.query('DELETE FROM simulations');
@@ -309,9 +391,21 @@ export class TestDataHelper {
     return parseInt(result.rows[0].count);
   }
 
-  // Get task count by status
-  async getTaskCountByStatus(status: TaskStatus): Promise<number> {
-    const result = await this.pool.query('SELECT COUNT(*) as count FROM tasks WHERE status = $1', [status]);
+  // Get wall count
+  async getWallCount(): Promise<number> {
+    const result = await this.pool.query('SELECT COUNT(*) as count FROM walls');
+    return parseInt(result.rows[0].count);
+  }
+
+  // Get wall count by simulation
+  async getWallCountBySimulation(simulation_id: number): Promise<number> {
+    const result = await this.pool.query('SELECT COUNT(*) as count FROM walls WHERE simulation_id = $1', [simulation_id]);
+    return parseInt(result.rows[0].count);
+  }
+
+  // Get wall count by type
+  async getWallCountByType(type: WallType): Promise<number> {
+    const result = await this.pool.query('SELECT COUNT(*) as count FROM walls WHERE type = $1', [type]);
     return parseInt(result.rows[0].count);
   }
 }
