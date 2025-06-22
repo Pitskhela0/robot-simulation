@@ -1,0 +1,12 @@
+
+.grid-cell {
+  border: 1px solid #eee;
+  background-color: #fff;
+  aspect-ratio: 1 / 1; 
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.grid-cell:hover {
+  background-color: #f0f8ff; 
+}
