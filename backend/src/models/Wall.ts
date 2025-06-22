@@ -246,52 +246,66 @@ export class Wall {
     ];
   }
 
-  // Check if there's a direct path between two points (no walls blocking)
-  async isPathBlocked(fromX: number, fromY: number, toX: number, toY: number, simulationId: number): Promise<boolean> {
-    // Simple line-of-sight check using Bresenham's line algorithm
-    const points = this.getLinePoints(fromX, fromY, toX, toY);
-    
-    // Check each point along the path (excluding start and end points)
-    for (let i = 1; i < points.length - 1; i++) {
-      const point = points[i];
-      if (await this.isCellOccupied(point.x, point.y, simulationId)) {
-        return true; // Path is blocked
-      }
+
+
+
+// Check if there's a direct path between two points (no walls blocking)
+async isPathBlocked(fromX: number, fromY: number, toX: number, toY: number, simulationId: number): Promise<boolean> {
+  // For diagonal movement, check if it's a clear diagonal path
+  const dx = Math.abs(toX - fromX);
+  const dy = Math.abs(toY - fromY);
+  
+  // If it's a perfect diagonal (45-degree), allow movement around obstacles
+  if (dx === dy && dx > 0) {
+    // For diagonal paths, we don't block based on intermediate grid cells
+    // This allows robots to move diagonally around obstacles
+    return false;
+  }
+  
+  // For straight lines (horizontal/vertical), use the original logic
+  const points = this.getLinePoints(fromX, fromY, toX, toY);
+  
+  // Check each point along the path (excluding start and end points)
+  for (let i = 1; i < points.length - 1; i++) {
+    const point = points[i];
+    if (await this.isCellOccupied(point.x, point.y, simulationId)) {
+      return true; // Path is blocked
     }
-    
-    return false; // Path is clear
+  }
+  
+  return false; // Path is clear
+}
+
+// Get all points along a line using Bresenham's algorithm
+private getLinePoints(x0: number, y0: number, x1: number, y1: number): GridCoordinate[] {
+  const points: GridCoordinate[] = [];
+  const dx = Math.abs(x1 - x0);
+  const dy = Math.abs(y1 - y0);
+  const sx = x0 < x1 ? 1 : -1;
+  const sy = y0 < y1 ? 1 : -1;
+  let err = dx - dy;
+
+  let x = x0;
+  let y = y0;
+
+  while (true) {
+    points.push({ x, y });
+
+    if (x === x1 && y === y1) break;
+
+    const e2 = 2 * err;
+    if (e2 > -dy) {
+      err -= dy;
+      x += sx;
+    }
+    if (e2 < dx) {
+      err += dx;
+      y += sy;
+    }
   }
 
-  // Get all points along a line using Bresenham's algorithm
-  private getLinePoints(x0: number, y0: number, x1: number, y1: number): GridCoordinate[] {
-    const points: GridCoordinate[] = [];
-    const dx = Math.abs(x1 - x0);
-    const dy = Math.abs(y1 - y0);
-    const sx = x0 < x1 ? 1 : -1;
-    const sy = y0 < y1 ? 1 : -1;
-    let err = dx - dy;
-
-    let x = x0;
-    let y = y0;
-
-    while (true) {
-      points.push({ x, y });
-
-      if (x === x1 && y === y1) break;
-
-      const e2 = 2 * err;
-      if (e2 > -dy) {
-        err -= dy;
-        x += sx;
-      }
-      if (e2 < dx) {
-        err += dx;
-        y += sy;
-      }
-    }
-
-    return points;
-  }
+  return points;
+}
 
   // Validate wall placement (check against base station, other walls, etc.)
   async validateWallPlacement(x: number, y: number, simulationId: number, gridWidth: number, gridHeight: number): Promise<{
