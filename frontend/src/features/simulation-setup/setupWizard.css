@@ -1,0 +1,24 @@
+/* src/features/simulation-setup/SetupWizard.css */
+.setup-wizard {
+  display: flex;
+  gap: 30px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.wizard-controls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.wizard-preview {
+  flex: 2;
+}
+
+.error-message {
+  color: #d9534f;
+  font-weight: bold;
+}

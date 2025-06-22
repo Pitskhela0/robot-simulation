@@ -1,25 +1,21 @@
+// src/App.tsx
 import React from 'react';
-
+import { SimulationProvider } from './context/SimulationContext';
+import SetupWizard from './features/simulation-setup/SetupWizard';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <SimulationProvider>
+      <div className="app-container">
+        <header className="app-header">
+          <h1>Robot Task Simulator</h1>
+        </header>
+        <main className="app-main">
+          <SetupWizard />
+        </main>
+      </div>
+    </SimulationProvider>
   );
 }
 
