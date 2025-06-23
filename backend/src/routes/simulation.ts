@@ -1,5 +1,4 @@
-// backend/src/routes/simulations.ts
-
+// backend/src/routes/simulations.ts 
 import { Router } from 'express';
 import {
   createSimulation,
@@ -8,7 +7,7 @@ import {
   updateSimulation,
   deleteSimulation,
   getSimulationStats
-} from '../conrollers/simulationController';
+} from '../conrollers/simulationController'; // Fixed path
 import {
   createSimulationValidation,
   updateSimulationValidation,

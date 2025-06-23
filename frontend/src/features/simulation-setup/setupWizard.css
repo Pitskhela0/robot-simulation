@@ -1,24 +1,136 @@
-/* src/features/simulation-setup/SetupWizard.css */
 .setup-wizard {
-  display: flex;
-  gap: 30px;
-  padding: 20px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 20px;
+}
+
+.wizard-header {
+  margin-bottom: 30px;
+}
+
+.wizard-header h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+
+.wizard-content {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
 }
 
 .wizard-controls {
   flex: 1;
+  max-width: 500px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
 }
 
 .wizard-preview {
   flex: 2;
+  min-width: 400px;
 }
 
-.error-message {
-  color: #d9534f;
-  font-weight: bold;
+.wizard-preview h4 {
+  margin-top: 0;
+  color: #495057;
+  margin-bottom: 15px;
+}
+
+.preview-info {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #28a745;
+}
+
+.preview-info p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.preview-info strong {
+  color: #495057;
+}
+
+.coming-soon-step {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+}
+
+.coming-soon-step h3 {
+  color: #856404;
+  margin-top: 0;
+}
+
+.coming-soon-step p {
+  color: #856404;
+  margin-bottom: 10px;
+}
+
+.coming-soon-step em {
+  font-style: italic;
+  font-weight: 600;
+}
+
+.validation-errors {
+  background-color: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 20px 0;
+}
+
+.validation-errors h4 {
+  color: #c53030;
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.validation-errors ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.validation-errors li {
+  color: #742a2a;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .wizard-content {
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .wizard-controls {
+    max-width: none;
+  }
+  
+  .wizard-preview {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .setup-wizard {
+    padding: 15px;
+  }
+  
+  .wizard-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .wizard-content {
+    gap: 20px;
+  }
 }

@@ -1,0 +1,44 @@
+/* src/components/UI/Select.css */
+.custom-select {
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.custom-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.custom-select:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* src/features/simulation-setup/WizardNavigation.css */
+.wizard-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-top: 1px solid #dee2e6;
+  margin-top: 20px;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.wizard-navigation button {
+  min-width: 100px;
+}

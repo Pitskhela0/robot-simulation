@@ -1,4 +1,4 @@
-
+// src / types/ entities.ts
 export interface Simulation {
   id: number;
   name: string;

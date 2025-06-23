@@ -1,3 +1,4 @@
+// backend/ src/ api/ routes
 import { Router } from 'express';
 import { pool } from '../../db'; // Adjust the import path as needed
 

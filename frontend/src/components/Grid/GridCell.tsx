@@ -1,4 +1,4 @@
-
+// src/ components/ gridCell.tsc
 import React from 'react';
 import './GridCell.css';
 

@@ -1,0 +1,36 @@
+/* src/components/Layout/Navigation.css */
+.navigation {
+  display: flex;
+  align-items: center;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+
+.nav-item {
+  margin: 0;
+}
+
+.nav-link {
+  display: block;
+  padding: 20px 16px;
+  color: #ecf0f1;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+  border-bottom: 3px solid transparent;
+}
+
+.nav-link:hover {
+  background-color: #34495e;
+  color: white;
+}
+
+.nav-link.active {
+  background-color: #3498db;
+  border-bottom-color: #2980b9;
+}

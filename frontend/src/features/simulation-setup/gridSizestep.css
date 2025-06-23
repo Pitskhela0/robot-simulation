@@ -1,18 +1,38 @@
-/* src/features/simulation-setup/GridSizeStep.css */
+/* src/features/simulation-setup/GridSizeStep.css (enhanced) */
 .grid-size-step {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
+  max-width: 500px;
+}
+
+.grid-size-step h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  text-align: left;
-  gap: 5px;
+  gap: 8px;
 }
 
 .form-group label {
-  font-weight: bold;
+  font-weight: 600;
+  color: #495057;
   font-size: 14px;
 }
+
+.form-group small {
+  color: #6c757d;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.grid-info p {
+  margin: 0;
+  font-weight: 600;
+  color: #007bff;
+} 

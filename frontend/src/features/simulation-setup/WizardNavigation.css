@@ -1,0 +1,19 @@
+/* src/features/simulation-setup/WizardNavigation.css */
+.wizard-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-top: 1px solid #dee2e6;
+  margin-top: 20px;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.wizard-navigation button {
+  min-width: 100px;
+}
