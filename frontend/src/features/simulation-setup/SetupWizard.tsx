@@ -1,7 +1,7 @@
 // src/features/simulation-setup/SetupWizard.tsx (Enhanced)
 import React, { useState } from 'react';
 import { useSimulation } from '../../context/SimulationContext';
-import GridSizeStep from './GridSizestep';
+import GridSizeStep from './GridSizeStep';
 import WizardNavigation from './WizardNavigation';
 import StepIndicator from './StepIndicator';
 import Grid from '../../components/Grid/Grid';
