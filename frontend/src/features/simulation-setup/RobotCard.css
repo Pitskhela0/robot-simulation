@@ -1,0 +1,184 @@
+/* src/features/simulation-setup/RobotCard.css */
+.robot-card {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  border-left-width: 4px;
+  padding: 16px;
+  transition: all 0.2s;
+}
+
+.robot-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.robot-card.deleting {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.robot-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.robot-info {
+  flex: 1;
+}
+
+.robot-name {
+  margin: 0 0 4px 0;
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.robot-version {
+  font-size: 12px;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.robot-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.details-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.details-toggle:hover {
+  background-color: #f8f9fa;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+  background-color: #f8d7da;
+}
+
+.robot-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.robot-status {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.status-label {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.status-value {
+  color: #495057;
+  font-weight: 600;
+}
+
+.battery-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 100px;
+}
+
+.battery-bar {
+  height: 8px;
+  border-radius: 4px;
+  transition: all 0.3s;
+  min-width: 2px;
+}
+
+.battery-text {
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 30px;
+}
+
+.status-badge {
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.robot-details {
+  border-top: 1px solid #dee2e6;
+  padding-top: 12px;
+}
+
+.robot-details h6 {
+  margin: 0 0 8px 0;
+  color: #495057;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.capability-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.capability-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.capability-label {
+  color: #6c757d;
+}
+
+.capability-value {
+  color: #495057;
+  font-weight: 600;
+}
+
+.robot-card-error {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
+
+.error-text {
+  color: #721c24;
+  font-size: 12px;
+}

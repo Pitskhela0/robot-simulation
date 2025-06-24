@@ -1,4 +1,10 @@
 // src/utils/validation.ts
+import { RobotVersion, ROBOT_CAPABILITIES } from '../types/robot';
+
+export interface ValidationResult {
+  isValid: boolean;
+  errors: string[];
+}
 
 export interface ValidationResult {
   isValid: boolean;
@@ -141,17 +147,11 @@ export const validateRobotName = (name: string): ValidationResult => {
  */
 export const validateBatteryLevel = (
   batteryLevel: number, 
-  robotVersion: 'V1' | 'V2' | 'V3'
+  robotVersion: RobotVersion
 ): ValidationResult => {
   const errors: string[] = [];
   
-  const maxCapacity = {
-    'V1': 100,
-    'V2': 150,
-    'V3': 200
-  };
-  
-  const maxBattery = maxCapacity[robotVersion];
+  const maxCapacity = ROBOT_CAPABILITIES[robotVersion].batteryCapacity;
   
   if (!Number.isInteger(batteryLevel)) {
     errors.push('Battery level must be a whole number');
@@ -161,8 +161,8 @@ export const validateBatteryLevel = (
     errors.push('Battery level cannot be negative');
   }
   
-  if (batteryLevel > maxBattery) {
-    errors.push(`Battery level cannot exceed ${maxBattery}% for ${robotVersion} robots`);
+  if (batteryLevel > maxCapacity) {
+    errors.push(`Battery level cannot exceed ${maxCapacity}% for ${robotVersion} robots`);
   }
   
   return {
@@ -170,6 +170,41 @@ export const validateBatteryLevel = (
     errors
   };
 };
+
+/**
+ * Validates base station placement
+ * @param x X coordinate
+ * @param y Y coordinate
+ * @param gridWidth Grid width
+ * @param gridHeight Grid height
+ * @returns ValidationResult with validity status and error messages
+ */
+export const validateBaseStationPlacement = (
+  x: number,
+  y: number,
+  gridWidth: number,
+  gridHeight: number
+): ValidationResult => {
+  const errors: string[] = [];
+  
+  if (!Number.isInteger(x) || !Number.isInteger(y)) {
+    errors.push('Base station coordinates must be integers');
+  }
+  
+  if (x < 0 || x >= gridWidth) {
+    errors.push(`X coordinate must be between 0 and ${gridWidth - 1}`);
+  }
+  
+  if (y < 0 || y >= gridHeight) {
+    errors.push(`Y coordinate must be between 0 and ${gridHeight - 1}`);
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};
+
 
 /**
  * Validates task priority

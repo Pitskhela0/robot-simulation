@@ -1,7 +1,9 @@
-// src/features/simulation-setup/SetupWizard.tsx (Enhanced)
+// src/features/simulation-setup/SetupWizard.tsx 
 import React, { useState } from 'react';
 import { useSimulation } from '../../context/SimulationContext';
 import GridSizeStep from './GridSizeStep';
+import BaseStationStep from './BaseStationStep';
+import RobotConfigurationStep from './RobotConfigurationStep';
 import WizardNavigation from './WizardNavigation';
 import StepIndicator from './StepIndicator';
 import Grid from '../../components/Grid/Grid';
@@ -20,12 +22,12 @@ const WIZARD_STEPS = [
   {
     id: 2,
     title: 'Place Base Station',
-    description: 'Choose base station location (Coming Soon)'
+    description: 'Choose base station location'
   },
   {
     id: 3,
     title: 'Add Robots',
-    description: 'Configure robots for simulation (Coming Soon)'
+    description: 'Configure robots for simulation'
   },
   {
     id: 4,
@@ -40,7 +42,16 @@ const WIZARD_STEPS = [
 ];
 
 const SetupWizard: React.FC = () => {
-  const { name, width, height, setSimulationId } = useSimulation();
+  const { 
+    name, 
+    width, 
+    height, 
+    baseStation, 
+    robots,
+    simulationId, 
+    setSimulationId 
+  } = useSimulation();
+  
   const [currentStep, setCurrentStep] = useState(1);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   
@@ -53,20 +64,60 @@ const SetupWizard: React.FC = () => {
   const validateCurrentStep = (): boolean => {
     const errors: string[] = [];
     
-    if (currentStep === 1) {
-      const nameValidation = validateSimulationName(name);
-      const gridValidation = validateGridDimensions(width, height);
+    switch (currentStep) {
+      case 1:
+        const nameValidation = validateSimulationName(name);
+        const gridValidation = validateGridDimensions(width, height);
+        errors.push(...nameValidation.errors, ...gridValidation.errors);
+        break;
       
-      errors.push(...nameValidation.errors, ...gridValidation.errors);
+      case 2:
+        if (!baseStation) {
+          errors.push('Please place the base station on the grid');
+        }
+        break;
+      
+      case 3:
+        if (!baseStation) {
+          errors.push('Base station must be placed before configuring robots');
+        }
+        if (robots.length === 0) {
+          errors.push('At least one robot is required for the simulation');
+        }
+        break;
+      
+      case 4:
+      case 5:
+        // Future validation for walls and tasks
+        break;
     }
     
     setValidationErrors(errors);
     return errors.length === 0;
   };
 
-  const handleNext = () => {
-    if (validateCurrentStep()) {
-      if (currentStep < WIZARD_STEPS.length) {
+  const handleNext = async () => {
+    if (currentStep === 1 && !simulationId) {
+      // Create simulation on first step
+      if (!validateCurrentStep()) {
+        return;
+      }
+
+      try {
+        const newSimulation = await executeCreate({
+          name,
+          grid_width: width,
+          grid_height: height
+        });
+        
+        setSimulationId(newSimulation.id);
+        setCurrentStep(currentStep + 1);
+      } catch (err) {
+        console.error('Failed to create simulation:', err);
+      }
+    } else {
+      // Regular step validation and navigation
+      if (validateCurrentStep() && currentStep < WIZARD_STEPS.length) {
         setCurrentStep(currentStep + 1);
       }
     }
@@ -84,26 +135,17 @@ const SetupWizard: React.FC = () => {
       return;
     }
 
-    try {
-      const newSimulation = await executeCreate({
-        name,
-        grid_width: width,
-        grid_height: height
-      });
-      
-      setSimulationId(newSimulation.id);
-      console.log('Simulation created successfully! ID:', newSimulation.id);
-      
-      // For now, just show success message
-      alert('Simulation created successfully! More features coming soon.');
-    } catch (err) {
-      console.error('Failed to create simulation:', err);
-    }
+    alert(`Simulation setup complete! 
+    - Grid: ${width}×${height}
+    - Base Station: (${baseStation?.x}, ${baseStation?.y})
+    - Robots: ${robots.length}
+    
+    Ready for the next phase of development!`);
   };
 
   const handleCellClick = (x: number, y: number) => {
     console.log(`Grid cell clicked: (${x}, ${y})`);
-    // Future: Handle different interactions based on current step
+    // Cell clicks are handled by individual step components
   };
 
   const renderCurrentStep = () => {
@@ -111,21 +153,9 @@ const SetupWizard: React.FC = () => {
       case 1:
         return <GridSizeStep />;
       case 2:
-        return (
-          <div className="coming-soon-step">
-            <h3>Base Station Placement</h3>
-            <p>This feature will allow you to click on the grid to place the base station.</p>
-            <p><em>Coming in the next phase of development!</em></p>
-          </div>
-        );
+        return <BaseStationStep />;
       case 3:
-        return (
-          <div className="coming-soon-step">
-            <h3>Robot Configuration</h3>
-            <p>This feature will allow you to add and configure robots with different versions.</p>
-            <p><em>Coming in the next phase of development!</em></p>
-          </div>
-        );
+        return <RobotConfigurationStep />;
       case 4:
         return (
           <div className="coming-soon-step">
@@ -151,6 +181,13 @@ const SetupWizard: React.FC = () => {
     if (currentStep === 1) return 'Create & Continue';
     if (currentStep === WIZARD_STEPS.length) return 'Finish Setup';
     return 'Next';
+  };
+
+  const canNavigateNext = () => {
+    if (currentStep === 1) return true; // Validation handled in handleNext
+    if (currentStep === 2) return baseStation !== null;
+    if (currentStep === 3) return baseStation !== null && robots.length > 0;
+    return true;
   };
 
   return (
@@ -188,21 +225,30 @@ const SetupWizard: React.FC = () => {
             onNext={handleNext}
             onPrevious={handlePrevious}
             onFinish={handleFinish}
-            isNextDisabled={validationErrors.length > 0}
+            isNextDisabled={!canNavigateNext()}
             isLoading={isCreating}
             nextButtonText={getNextButtonText()}
           />
         </div>
 
-        <div className="wizard-preview">
-          <h4>Live Preview</h4>
-          <div className="preview-info">
-            <p><strong>Name:</strong> {name || 'Untitled Simulation'}</p>
-            <p><strong>Dimensions:</strong> {width} × {height}</p>
-            <p><strong>Total Cells:</strong> {width * height}</p>
+        {(currentStep === 1 || currentStep >= 4) && (
+          <div className="wizard-preview">
+            <h4>Live Preview</h4>
+            <div className="preview-info">
+              <p><strong>Name:</strong> {name || 'Untitled Simulation'}</p>
+              <p><strong>Dimensions:</strong> {width} × {height}</p>
+              <p><strong>Base Station:</strong> {baseStation ? `(${baseStation.x}, ${baseStation.y})` : 'Not placed'}</p>
+              <p><strong>Robots:</strong> {robots.length}</p>
+            </div>
+            <Grid 
+              width={width} 
+              height={height} 
+              baseStation={baseStation}
+              robots={robots}
+              onCellClick={handleCellClick} 
+            />
           </div>
-          <Grid width={width} height={height} onCellClick={handleCellClick} />
-        </div>
+        )}
       </div>
     </div>
   );

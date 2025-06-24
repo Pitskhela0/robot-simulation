@@ -1,4 +1,6 @@
-// src/types/grid.ts
+// src/types/grid.ts (FIXED)
+import { RobotVersion } from './robot'; // Add this import
+
 export enum CellType {
   EMPTY = 'empty',
   BASE_STATION = 'base_station',
@@ -10,7 +12,7 @@ export enum CellType {
 export interface GridCellState {
   type: CellType;
   robotId?: number;
-  robotVersion?: RobotVersion;
+  robotVersion?: RobotVersion; // Now this will work
   isHovered?: boolean;
   isSelectable?: boolean;
 }

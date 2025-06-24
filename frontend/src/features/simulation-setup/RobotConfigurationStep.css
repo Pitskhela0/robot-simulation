@@ -1,0 +1,106 @@
+/* src/features/simulation-setup/RobotConfigurationStep.css */
+.robot-configuration-step {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.robot-config-header h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+.robot-config-header p {
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+.robot-config-content {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.robot-controls {
+  flex: 1;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.robot-stats {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  border-left: 4px solid #007bff;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.stat-item:last-child {
+  margin-bottom: 0;
+}
+
+.stat-label {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.stat-value {
+  color: #495057;
+  font-weight: 600;
+}
+
+.add-robot-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-robot-button:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.add-robot-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.robot-grid-preview {
+  flex: 2;
+  min-width: 400px;
+}
+
+.robot-grid-preview h4 {
+  margin-top: 0;
+  color: #495057;
+  margin-bottom: 15px;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .robot-config-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .robot-controls {
+    max-width: none;
+  }
+  
+  .robot-grid-preview {
+    min-width: auto;
+  }
+}
