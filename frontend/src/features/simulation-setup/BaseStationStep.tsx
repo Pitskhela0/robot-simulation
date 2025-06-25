@@ -1,17 +1,33 @@
 // src/features/simulation-setup/BaseStationStep.tsx
 import React, { useState } from 'react';
 import { useSimulation } from '../../context/SimulationContext';
+import { updateSimulation } from '../../services/simulationService'; // Add this import
 import Grid from '../../components/Grid/Grid';
 import Button from '../../components/UI/Button';
 import './BaseStationStep.css';
 
 const BaseStationStep: React.FC = () => {
-  const { width, height, baseStation, setBaseStation } = useSimulation();
+  const { simulationId, width, height, baseStation, setBaseStation } = useSimulation(); // Add simulationId
   const [placementMode, setPlacementMode] = useState(false);
 
-  const handleCellClick = (x: number, y: number) => {
+  const handleCellClick = async (x: number, y: number) => {
     if (placementMode) {
       setBaseStation({ x, y });
+      
+      // API call to save base station coordinates (only if simulation exists)
+      if (simulationId) {
+        try {
+          await updateSimulation(simulationId, {
+            base_station_x: x,
+            base_station_y: y
+          });
+          console.log('Base station coordinates saved to backend');
+        } catch (error) {
+          console.error('Failed to save base station:', error);
+          // You might want to show an error message to the user here
+        }
+      }
+      
       setPlacementMode(false);
     }
   };
@@ -20,9 +36,22 @@ const BaseStationStep: React.FC = () => {
     setPlacementMode(true);
   };
 
-  const handleClearBaseStation = () => {
+  const handleClearBaseStation = async () => {
     setBaseStation(null);
     setPlacementMode(false);
+    
+    // API call to clear base station coordinates
+    if (simulationId) {
+      try {
+        await updateSimulation(simulationId, {
+          base_station_x: null,
+          base_station_y: null
+        });
+        console.log('Base station coordinates cleared from backend');
+      } catch (error) {
+        console.error('Failed to clear base station:', error);
+      }
+    }
   };
 
   return (

@@ -9,6 +9,8 @@ export interface SimulationData {
   description?: string;
   grid_width: number;
   grid_height: number;
+  base_station_x?: number | null;  // Add this
+  base_station_y?: number | null;  // Add this
   status?: 'created' | 'running' | 'paused' | 'completed' | 'failed';
   created_at?: Date;
   updated_at?: Date;
@@ -48,16 +50,18 @@ export class Simulation {
       description,
       grid_width,
       grid_height,
+      base_station_x,     // Add this
+      base_station_y,     // Add this
       status = 'created'
     } = simulationData;
 
     const query = `
-      INSERT INTO simulations (user_id, name, description, grid_width, grid_height, status)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      INSERT INTO simulations (user_id, name, description, grid_width, grid_height, base_station_x, base_station_y, status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
     `;
 
-    const values = [user_id, name, description, grid_width, grid_height, status];
+    const values = [user_id, name, description, grid_width, grid_height, base_station_x, base_station_y, status];
     const result: QueryResult<SimulationData> = await this.pool.query(query, values);
     
     return result.rows[0];
@@ -219,7 +223,7 @@ export class Simulation {
     const query = 'DELETE FROM simulations WHERE id = $1';
     const result = await this.pool.query(query, [id]);
     
-return (result.rowCount ?? 0) > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Delete simulation with user check
@@ -227,7 +231,7 @@ return (result.rowCount ?? 0) > 0;
     const query = 'DELETE FROM simulations WHERE id = $1 AND user_id = $2';
     const result = await this.pool.query(query, [id, userId]);
     
-return (result.rowCount ?? 0) > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Check if simulation exists
@@ -254,5 +258,13 @@ return (result.rowCount ?? 0) > 0;
   // Validate grid dimensions
   validateGridDimensions(width: number, height: number): boolean {
     return width >= 5 && width <= 100 && height >= 5 && height <= 100;
+  }
+
+  // Validate base station coordinates (if provided)
+  validateBaseStationCoordinates(x: number | null, y: number | null, gridWidth: number, gridHeight: number): boolean {
+    if (x === null || y === null) {
+      return true; // Allow null coordinates
+    }
+    return this.validateCoordinates(x, y, gridWidth, gridHeight);
   }
 }
