@@ -13,7 +13,7 @@ export const createSimulation = async (payload: CreateSimulationPayload): Promis
   // Add default user_id if not provided
   const requestPayload = {
     ...payload,
-    user_id: payload.user_id || 1, // Default to user ID 1 for now
+    user_id: payload.user_id || 38, // Default to user ID 1 for now
   };
   
   const response = await apiClient.post('/simulations', requestPayload);

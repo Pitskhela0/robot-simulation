@@ -2,7 +2,7 @@
 import React from 'react';
 import { useSimulation } from '../../context/SimulationContext';
 import Input from '../../components/UI/Input';
-import './GridSizeStep.css';
+import './gridSizestep.css';
 
 const GridSizeStep: React.FC = () => {
   const { name, setName, width, setWidth, height, setHeight } = useSimulation();
