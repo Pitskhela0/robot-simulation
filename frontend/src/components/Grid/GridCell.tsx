@@ -1,7 +1,6 @@
-// src/components/Grid/GridCell.tsx 
-import React from 'react';
+// src/components/Grid/GridCell.tsx (Enhanced version)
+import React, { memo } from 'react';
 import { CellType, GridCellState } from '../../types/grid';
-import { RobotVersion } from '../../types/robot';
 import './GridCell.css';
 
 interface GridCellProps {
@@ -10,79 +9,128 @@ interface GridCellProps {
   state: GridCellState;
   onClick: (x: number, y: number) => void;
   onMouseEnter?: (x: number, y: number) => void;
-  onMouseLeave?: (x: number, y: number) => void;
+  onMouseLeave?: () => void;
+  showCoordinates?: boolean;
+  disabled?: boolean;
 }
 
-const GridCell: React.FC<GridCellProps> = ({ 
+const GridCell: React.FC<GridCellProps> = memo(({ 
   x, 
   y, 
   state, 
   onClick, 
   onMouseEnter, 
-  onMouseLeave 
+  onMouseLeave,
+  showCoordinates = true,
+  disabled = false
 }) => {
   const getCellClassName = () => {
     const baseClass = 'grid-cell';
     const classes = [baseClass];
     
-    if (state.type !== CellType.EMPTY) {
-      classes.push(`cell-${state.type}`);
-    }
+    // Add type-specific class
+    classes.push(`cell-${state.type}`);
     
-    if (state.isHovered) {
+    // Add state classes
+    if (state.isHovered && !disabled) {
       classes.push('cell-hovered');
     }
     
-    if (state.isSelectable) {
+    if (state.isSelectable && !disabled) {
       classes.push('cell-selectable');
+    }
+
+    if (state.isHighlighted) {
+      classes.push('cell-highlighted');
     }
     
     if (state.robotVersion) {
       classes.push(`robot-${state.robotVersion.toLowerCase()}`);
+    }
+
+    if (disabled) {
+      classes.push('cell-disabled');
     }
     
     return classes.join(' ');
   };
 
   const handleClick = () => {
-    onClick(x, y);
+    if (!disabled) {
+      onClick(x, y);
+    }
   };
 
   const handleMouseEnter = () => {
-    onMouseEnter?.(x, y);
+    if (!disabled) {
+      onMouseEnter?.(x, y);
+    }
   };
 
   const handleMouseLeave = () => {
-    onMouseLeave?.(x, y);
+    if (!disabled) {
+      onMouseLeave?.();
+    }
   };
 
   const getCellContent = () => {
     switch (state.type) {
       case CellType.BASE_STATION:
-        return <span className="cell-icon base-icon">🏠</span>;
+        return <span className="cell-icon base-icon" title="Base Station">🏠</span>;
       case CellType.ROBOT:
-        return <span className="cell-icon robot-icon">🤖</span>;
+        return (
+          <span 
+            className="cell-icon robot-icon" 
+            style={{ color: state.robotColor }}
+            title={`Robot (${state.robotVersion})`}
+          >
+            🤖
+          </span>
+        );
       case CellType.WALL:
-        return <span className="cell-icon wall-icon">⬛</span>;
+        return <span className="cell-icon wall-icon" title="Wall">⬛</span>;
       case CellType.TASK:
-        return <span className="cell-icon task-icon">📋</span>;
+        return <span className="cell-icon task-icon" title="Task">📋</span>;
       default:
         return null;
     }
   };
 
+  const getCellStyle = () => {
+    const style: React.CSSProperties = {};
+    
+    if (state.type === CellType.ROBOT && state.robotColor) {
+      style.borderColor = state.robotColor;
+    }
+    
+    return style;
+  };
+
   return (
     <div 
       className={getCellClassName()}
+      style={getCellStyle()}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      title={`Cell (${x}, ${y}) - ${state.type}`}
+      title={`Cell (${x}, ${y}) - ${state.type}${disabled ? ' (Disabled)' : ''}`}
+      role="button"
+      tabIndex={state.isSelectable && !disabled ? 0 : -1}
+      onKeyDown={(e) => {
+        if ((e.key === 'Enter' || e.key === ' ') && !disabled) {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
     >
       {getCellContent()}
-      <span className="cell-coordinates">{x},{y}</span>
+      {showCoordinates && (
+        <span className="cell-coordinates">{x},{y}</span>
+      )}
     </div>
   );
-};
+});
+
+GridCell.displayName = 'GridCell';
 
 export default GridCell;
