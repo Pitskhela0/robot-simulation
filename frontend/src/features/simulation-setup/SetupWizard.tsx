@@ -1,7 +1,7 @@
 // src/features/simulation-setup/SetupWizard.tsx 
 import React, { useState } from 'react';
 import { useSimulation } from '../../context/SimulationContext';
-import GridSizeStep from './GridSizeStep';
+import GridSizeStep from './GridSizestep';
 import BaseStationStep from './BaseStationStep';
 import RobotConfigurationStep from './RobotConfigurationStep';
 import WizardNavigation from './WizardNavigation';
@@ -11,7 +11,7 @@ import ErrorDisplay from '../../components/UI/ErrorDisplay';
 import { createSimulation } from '../../services/simulationService';
 import { validateGridDimensions, validateSimulationName } from '../../utils/validation';
 import { useApi } from '../../hooks/useApi';
-import './SetupWizard.css';
+import './setupWizard.css';
 
 const WIZARD_STEPS = [
   {

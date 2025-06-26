@@ -8,12 +8,21 @@ interface CreateSimulationPayload {
   grid_height: number;
   user_id?: number; // Make optional for now, default to 1
 }
+export interface UpdateSimulationPayload {
+  name?: string;
+  grid_width?: number;
+  grid_height?: number;
+  user_id?: number;
+  base_station_x?: number | null;
+  base_station_y?: number | null;
+}
+
 
 export const createSimulation = async (payload: CreateSimulationPayload): Promise<Simulation> => {
   // Add default user_id if not provided
   const requestPayload = {
     ...payload,
-    user_id: payload.user_id || 1, // Default to user ID 1 for now
+    user_id: payload.user_id || 38, // Default to user ID 1 for now
   };
   
   const response = await apiClient.post('/simulations', requestPayload);
@@ -32,7 +41,7 @@ export const getSimulationById = async (id: number): Promise<Simulation> => {
   return response.data;
 };
 
-export const updateSimulation = async (id: number, payload: Partial<CreateSimulationPayload>): Promise<Simulation> => {
+export const updateSimulation = async (id: number, payload: Partial<UpdateSimulationPayload>): Promise<Simulation> => {
   const response = await apiClient.put(`/simulations/${id}`, payload);
   return response.data;
 };

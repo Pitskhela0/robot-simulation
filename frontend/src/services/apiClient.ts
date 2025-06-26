@@ -44,5 +44,18 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+// In your apiClient.ts, update the request interceptor:
+apiClient.interceptors.request.use(
+  (config) => {
+    console.log(`Making ${config.method?.toUpperCase()} request to ${config.url}`);
+    console.log(`Full URL: ${config.baseURL}${config.url}`); // Add this line
+    console.log(`Base URL: ${config.baseURL}`); // Add this line
+    return config;
+  },
+  (error) => {
+    console.error('Request interceptor error:', error);
+    return Promise.reject(error);
+  }
+);
 
 export default apiClient;
