@@ -3,8 +3,8 @@ import rateLimit from 'express-rate-limit';
 import { authConfig } from '../config/auth';
 
 export const loginRateLimit = rateLimit({
-  windowMs: authConfig.rateLimiting.windowMs,
-  max: authConfig.rateLimiting.maxAttempts,
+  windowMs: authConfig.rateLimiting.loginAttempts.windowMs,
+  max: authConfig.rateLimiting.loginAttempts.maxAttempts,
   message: {
     success: false,
     message: 'Too many login attempts, please try again later'
@@ -14,10 +14,12 @@ export const loginRateLimit = rateLimit({
 });
 
 export const registerRateLimit = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3,
+  windowMs: authConfig.rateLimiting.registration.windowMs,
+  max: authConfig.rateLimiting.registration.maxAttempts,
   message: {
     success: false,
     message: 'Too many registration attempts, please try again later'
-  }
+  },
+  standardHeaders: true,
+  legacyHeaders: false
 });

@@ -7,7 +7,7 @@ import {
   logout,
   getMe,
   updateProfile
-} from '../controllers/authController';
+} from '../conrollers/authController';
 import {
   registerValidation,
   loginValidation,

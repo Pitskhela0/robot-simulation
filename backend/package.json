@@ -14,7 +14,10 @@
     "test:coverage": "cross-env NODE_ENV=test jest --coverage",
     "test:db": "cross-env NODE_ENV=test jest src/__tests__/db-connection.test.ts",
     "test:migrations": "cross-env NODE_ENV=test jest src/__tests__/migrations.test.ts",
-    "test:api": "cross-env NODE_ENV=test jest src/__tests__/api.test.ts"
+    "test:api": "cross-env NODE_ENV=test jest src/__tests__/api.test.ts",
+    "test:auth": "cross-env NODE_ENV=test jest src/__tests__/auth --detectOpenHandles",
+    "test:auth:watch": "cross-env NODE_ENV=test jest src/__tests__/auth --watch",
+    "test:auth:coverage": "cross-env NODE_ENV=test jest src/__tests__/auth --coverage"
   },
   "keywords": [],
   "author": "",

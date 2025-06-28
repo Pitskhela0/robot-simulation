@@ -10,8 +10,15 @@ export const authConfig = {
     minLength: 8
   },
   rateLimiting: {
-    maxAttempts: 5,
-    windowMs: 15 * 60 * 1000 // 15 minutes
+    loginAttempts: {
+      maxAttempts: 5,
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      blockDuration: 30 * 60 * 1000 // 30 minutes
+    },
+    registration: {
+      maxAttempts: 3,
+      windowMs: 60 * 60 * 1000 // 1 hour
+    }
   }
 };
 

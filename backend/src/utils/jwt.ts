@@ -1,5 +1,5 @@
 // backend/src/utils/jwt.ts
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { authConfig } from '../config/auth';
 import { Pool } from 'pg';
 
@@ -17,15 +17,29 @@ export class JWTManager {
   }
 
   generateAccessToken(payload: JWTPayload): string {
-    return jwt.sign(payload, authConfig.jwt.secret, {
-      expiresIn: authConfig.jwt.accessTokenExpiry
-    });
+    const signOptions: SignOptions = {
+  expiresIn: authConfig.jwt.accessTokenExpiry as jwt.SignOptions['expiresIn']
+};
+
+    return jwt.sign(
+      payload, 
+      authConfig.jwt.secret, 
+      signOptions
+    );
   }
 
   generateRefreshToken(userId: number): string {
-    return jwt.sign({ userId }, authConfig.jwt.secret, {
-      expiresIn: authConfig.jwt.refreshTokenExpiry
-    });
+    const payload = { userId };
+    const signOptions: SignOptions = {
+  expiresIn: authConfig.jwt.refreshTokenExpiry as jwt.SignOptions['expiresIn']
+};
+
+
+    return jwt.sign(
+      payload, 
+      authConfig.jwt.secret, 
+      signOptions
+    );
   }
 
   verifyToken(token: string): JWTPayload {
@@ -44,13 +58,17 @@ export class JWTManager {
 
   async validateRefreshToken(refreshToken: string): Promise<number | null> {
     try {
+      // First verify the JWT token itself
+      const decoded = jwt.verify(refreshToken, authConfig.jwt.secret) as any;
+      
+      // Check if it exists in database and hasn't expired
       const result = await this.pool.query(
         'SELECT user_id FROM user_sessions WHERE refresh_token = $1 AND expires_at > NOW()',
         [refreshToken]
       );
       
       return result.rows[0]?.user_id || null;
-    } catch {
+    } catch (error) {
       return null;
     }
   }
