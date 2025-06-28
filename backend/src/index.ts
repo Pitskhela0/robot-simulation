@@ -9,6 +9,8 @@ import taskRoutes from './routes/tasks';
 import wallRoutes from './routes/walls';
 import healthRoutes from './api/routes/health'; // Keep the health route
 import { Request, Response, NextFunction } from 'express';
+import authRoutes from './routes/auth';
+
 
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -20,6 +22,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/api/auth', authRoutes);
 
 // Basic root route
 app.get('/', (_req, res) => {
