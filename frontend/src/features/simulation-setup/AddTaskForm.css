@@ -1,0 +1,180 @@
+/* src/features/simulation-setup/AddTaskForm.css */
+.add-task-form {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-header {
+  margin-bottom: 20px;
+}
+
+.form-header h4 {
+  margin: 0 0 8px 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.form-header p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  color: #495057;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 4px;
+  color: #6c757d;
+  font-size: 12px;
+}
+
+.coordinate-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.task-type-preview {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-left: 4px solid var(--task-color, #007bff);
+}
+
+.task-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.task-info {
+  flex: 1;
+}
+
+.task-info h5 {
+  margin: 0 0 8px 0;
+  color: #495057;
+  font-size: 1rem;
+}
+
+.task-info p {
+  margin: 0 0 4px 0;
+  color: #6c757d;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.task-info small {
+  color: #6c757d;
+  font-size: 12px;
+}
+
+.custom-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.custom-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.validation-errors {
+  background-color: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.validation-errors h6 {
+  color: #c53030;
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+.validation-errors ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.validation-errors li {
+  color: #742a2a;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.form-actions button {
+  min-width: 100px;
+}
+
+/* Task type specific colors */
+.add-task-form[data-task-type="pickup"] .task-type-preview {
+  border-left-color: #007bff;
+}
+
+.add-task-form[data-task-type="putdown"] .task-type-preview {
+  border-left-color: #28a745;
+}
+
+.add-task-form[data-task-type="cleaning"] .task-type-preview {
+  border-left-color: #ffc107;
+}
+
+.add-task-form[data-task-type="inspection"] .task-type-preview {
+  border-left-color: #6f42c1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .coordinate-group {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .task-type-preview {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
+}

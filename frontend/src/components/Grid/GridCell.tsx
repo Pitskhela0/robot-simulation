@@ -1,4 +1,4 @@
-// src/components/Grid/GridCell.tsx (Enhanced with wall support)
+// src/components/Grid/GridCell.tsx (Updated with task support)
 import React, { memo } from 'react';
 import { CellType, GridCellState } from '../../types/grid';
 import './GridCell.css';
@@ -56,6 +56,17 @@ const GridCell: React.FC<GridCellProps> = memo(({
       classes.push('cell-disabled');
     }
     
+    // Add priority-based classes for tasks
+    if (state.type === CellType.TASK && state.taskPriority) {
+      if (state.taskPriority >= 8) {
+        classes.push('task-high-priority');
+      } else if (state.taskPriority >= 5) {
+        classes.push('task-medium-priority');
+      } else {
+        classes.push('task-low-priority');
+      }
+    }
+    
     return classes.join(' ');
   };
 
@@ -96,7 +107,15 @@ const GridCell: React.FC<GridCellProps> = memo(({
       case CellType.PENDING_WALL:
         return <span className="cell-icon pending-wall-icon" title="Pending Wall">⬜</span>;
       case CellType.TASK:
-        return <span className="cell-icon task-icon" title="Task">📋</span>;
+        return (
+          <span 
+            className="cell-icon task-icon" 
+            style={{ color: state.taskColor }}
+            title={`Task (Priority: ${state.taskPriority})`}
+          >
+            {state.taskIcon}
+          </span>
+        );
       default:
         return null;
     }
@@ -109,11 +128,19 @@ const GridCell: React.FC<GridCellProps> = memo(({
       style.borderColor = state.robotColor;
     }
     
+    if (state.type === CellType.TASK && state.taskColor) {
+      style.borderColor = state.taskColor;
+    }
+    
     return style;
   };
 
   const getCellTitle = () => {
     let title = `Cell (${x}, ${y}) - ${state.type.replace('_', ' ')}`;
+    
+    if (state.type === CellType.TASK) {
+      title += ` (Priority: ${state.taskPriority})`;
+    }
     
     if (disabled) {
       title += ' (Disabled)';

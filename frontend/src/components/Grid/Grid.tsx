@@ -1,8 +1,9 @@
-// src/components/Grid/Grid.tsx (Enhanced with wall support)
+// src/components/Grid/Grid.tsx (Updated with task support)
 import React, { useState } from 'react';
 import GridCell from './GridCell';
 import { CellType, GridCellState, BaseStation, Wall } from '../../types/grid';
 import { Robot } from '../../types/robot';
+import { Task, TASK_TYPE_SPECS } from '../../types/task';
 import './Grid.css';
 
 interface GridProps {
@@ -11,6 +12,7 @@ interface GridProps {
   baseStation?: BaseStation | null;
   robots?: Robot[];
   walls?: Wall[];
+  tasks?: Task[];
   pendingWalls?: Array<{ x_position: number; y_position: number }>;
   onCellClick: (x: number, y: number) => void;
   mode?: 'base_station' | 'robot' | 'wall' | 'task' | 'view';
@@ -23,6 +25,7 @@ const Grid: React.FC<GridProps> = ({
   baseStation, 
   robots = [], 
   walls = [],
+  tasks = [],
   pendingWalls = [],
   onCellClick,
   mode = 'view',
@@ -31,7 +34,7 @@ const Grid: React.FC<GridProps> = ({
   const [hoveredCell, setHoveredCell] = useState<{x: number, y: number} | null>(null);
 
   const getCellState = (x: number, y: number): GridCellState => {
-    // Check if this cell contains the base station
+    // Check if this cell contains the base station (highest priority)
     if (baseStation && baseStation.x === x && baseStation.y === y) {
       return {
         type: CellType.BASE_STATION,
@@ -39,7 +42,7 @@ const Grid: React.FC<GridProps> = ({
       };
     }
 
-    // Check if this cell contains a robot
+    // Check if this cell contains a robot (second highest priority)
     const robot = robots.find(r => r.x_position === x && r.y_position === y);
     if (robot) {
       return {
@@ -48,6 +51,21 @@ const Grid: React.FC<GridProps> = ({
         robotVersion: robot.version,
         robotColor: robot.color,
         isSelectable: false
+      };
+    }
+
+    // Check if this cell contains a task (third priority)
+    const task = tasks.find(t => t.target_x === x && t.target_y === y);
+    if (task) {
+      const taskSpec = TASK_TYPE_SPECS[task.type];
+      return {
+        type: CellType.TASK,
+        taskId: task.id,
+        taskType: task.type,
+        taskIcon: taskSpec.icon,
+        taskColor: taskSpec.color,
+        taskPriority: task.priority,
+        isSelectable: mode === 'task' && !disabled
       };
     }
 
@@ -75,7 +93,7 @@ const Grid: React.FC<GridProps> = ({
     return {
       type: CellType.EMPTY,
       isHovered: hoveredCell?.x === x && hoveredCell?.y === y,
-      isSelectable: (mode === 'base_station' || mode === 'robot' || mode === 'wall') && !disabled
+      isSelectable: (mode === 'base_station' || mode === 'robot' || mode === 'wall' || mode === 'task') && !disabled
     };
   };
 

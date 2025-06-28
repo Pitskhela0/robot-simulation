@@ -1,0 +1,63 @@
+/* src/features/simulation-setup/TaskList.css */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.task-list h4 {
+  margin: 0;
+  color: #495057;
+  font-size: 1.1rem;
+}
+
+.task-list.empty {
+  padding: 40px 20px;
+}
+
+.empty-state {
+  text-align: center;
+  color: #6c757d;
+}
+
+.empty-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  margin: 8px 0;
+}
+
+.empty-subtitle {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.task-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.task-cards::-webkit-scrollbar {
+  width: 6px;
+}
+
+.task-cards::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.task-cards::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.task-cards::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

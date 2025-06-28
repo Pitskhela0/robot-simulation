@@ -1,10 +1,11 @@
-// src/features/simulation-setup/SetupWizard.tsx (Updated with wall placement)
+// src/features/simulation-setup/SetupWizard.tsx (Updated with task configuration)
 import React, { useState } from 'react';
 import { useSimulation } from '../../context/SimulationContext';
 import GridSizeStep from './GridSizestep';
 import BaseStationStep from './BaseStationStep';
 import RobotConfigurationStep from './RobotConfigurationStep';
 import WallPlacementStep from './WallPlacementStep';
+import TaskConfigurationStep from './TaskConfigurationStep';
 import WizardNavigation from './WizardNavigation';
 import StepIndicator from './StepIndicator';
 import Grid from '../../components/Grid/Grid';
@@ -38,7 +39,7 @@ const WIZARD_STEPS = [
   {
     id: 5,
     title: 'Add Tasks',
-    description: 'Define tasks for robots (Coming Soon)'
+    description: 'Define tasks for robots to complete'
   }
 ];
 
@@ -95,7 +96,13 @@ const SetupWizard: React.FC = () => {
         break;
       
       case 5:
-        // Future validation for tasks
+        if (!baseStation) {
+          errors.push('Base station must be placed before adding tasks');
+        }
+        if (robots.length === 0) {
+          errors.push('At least one robot is required before adding tasks');
+        }
+        // Tasks are optional, so no validation required
         break;
     }
     
@@ -142,12 +149,20 @@ const SetupWizard: React.FC = () => {
       return;
     }
 
-    alert(`Simulation setup complete! 
-    - Grid: ${width}×${height}
-    - Base Station: (${baseStation?.x}, ${baseStation?.y})
-    - Robots: ${robots.length}
-    
-    Ready for the next phase of development!`);
+    alert(`🎉 Simulation setup complete! 
+
+📊 Summary:
+• Grid: ${width}×${height}
+• Base Station: (${baseStation?.x}, ${baseStation?.y})
+• Robots: ${robots.length}
+
+Your simulation is ready to run! The next phase will include:
+• Simulation execution controls
+• Real-time robot movement
+• Task assignment and completion
+• Performance analytics
+
+Thank you for setting up your robot simulation!`);
   };
 
   const handleCellClick = (x: number, y: number) => {
@@ -166,13 +181,7 @@ const SetupWizard: React.FC = () => {
       case 4:
         return <WallPlacementStep />;
       case 5:
-        return (
-          <div className="coming-soon-step">
-            <h3>Task Configuration</h3>
-            <p>This feature will allow you to add tasks with different types and priorities.</p>
-            <p><em>Coming in the next phase of development!</em></p>
-          </div>
-        );
+        return <TaskConfigurationStep />;
       default:
         return <GridSizeStep />;
     }
@@ -180,7 +189,7 @@ const SetupWizard: React.FC = () => {
 
   const getNextButtonText = () => {
     if (currentStep === 1) return 'Create & Continue';
-    if (currentStep === WIZARD_STEPS.length) return 'Finish Setup';
+    if (currentStep === WIZARD_STEPS.length) return 'Complete Setup';
     return 'Next';
   };
 
@@ -189,6 +198,7 @@ const SetupWizard: React.FC = () => {
     if (currentStep === 2) return baseStation !== null;
     if (currentStep === 3) return baseStation !== null && robots.length > 0;
     if (currentStep === 4) return baseStation !== null; // Walls are optional
+    if (currentStep === 5) return baseStation !== null && robots.length > 0; // Tasks are optional
     return true;
   };
 
