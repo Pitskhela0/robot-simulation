@@ -1,4 +1,4 @@
-/* src/components/Grid/GridCell.css (Enhanced with wall support) */
+/* src/components/Grid/GridCell.css (Enhanced with task support) */
 .grid-cell {
   border: 1px solid #eee;
   background-color: #fff;
@@ -51,6 +51,25 @@
   background-color: #fff3cd;
   border-color: #ffc107;
   box-shadow: inset 0 0 5px rgba(255, 193, 7, 0.3);
+}
+
+/* Task priority specific styling */
+.task-high-priority {
+  background-color: #f8d7da;
+  border-color: #dc3545;
+  box-shadow: inset 0 0 5px rgba(220, 53, 69, 0.3);
+}
+
+.task-medium-priority {
+  background-color: #fff3cd;
+  border-color: #ffc107;
+  box-shadow: inset 0 0 5px rgba(255, 193, 7, 0.3);
+}
+
+.task-low-priority {
+  background-color: #d1ecf1;
+  border-color: #17a2b8;
+  box-shadow: inset 0 0 5px rgba(23, 162, 184, 0.3);
 }
 
 /* Robot version specific styling */
@@ -131,7 +150,35 @@
 }
 
 .task-icon {
-  font-size: 16px;
+  font-size: 18px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+}
+
+/* Task priority indicators */
+.task-high-priority .task-icon {
+  font-size: 20px;
+  animation: bounce 2s infinite;
+}
+
+.task-medium-priority .task-icon {
+  font-size: 19px;
+}
+
+.task-low-priority .task-icon {
+  font-size: 17px;
+  opacity: 0.8;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(-2px);
+  }
 }
 
 /* Cell coordinates */
@@ -163,6 +210,11 @@
   border-color: #6c757d;
 }
 
+.grid-mode-task .cell-selectable:hover {
+  background-color: #fff3cd;
+  border-color: #ffc107;
+}
+
 .grid-mode-wall .cell-empty.cell-selectable:hover {
   background-color: #e9ecef;
   border: 2px dashed #495057;
@@ -177,6 +229,16 @@
 .grid-mode-wall .cell-pending_wall.cell-selectable:hover {
   background-color: #dee2e6;
   border-color: #495057;
+}
+
+.grid-mode-task .cell-empty.cell-selectable:hover {
+  background-color: #fff3cd;
+  border: 2px dashed #ffc107;
+}
+
+.grid-mode-task .cell-task.cell-selectable:hover {
+  transform: scale(1.1);
+  z-index: 10;
 }
 
 /* Grid disabled state */
@@ -203,4 +265,15 @@
 .wall-placement-mode .cell-pending_wall:hover {
   background-color: #dee2e6 !important;
   transform: scale(0.95);
+}
+
+/* Task placement specific styles */
+.task-placement-mode .cell-empty:hover {
+  background-color: #fff3cd !important;
+  border: 2px dashed #ffc107 !important;
+}
+
+.task-placement-mode .cell-task:hover {
+  transform: scale(0.95) !important;
+  opacity: 0.8;
 }

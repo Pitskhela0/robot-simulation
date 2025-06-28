@@ -1,5 +1,6 @@
-// src/types/grid.ts (Updated to include walls)
+// src/types/grid.ts (Updated to include tasks)
 import { RobotVersion } from './robot';
+import { TaskType } from './task';
 
 export enum CellType {
   EMPTY = 'empty',
@@ -16,6 +17,10 @@ export interface GridCellState {
   robotVersion?: RobotVersion;
   robotColor?: string;
   taskId?: number;
+  taskType?: TaskType;
+  taskIcon?: string;
+  taskColor?: string;
+  taskPriority?: number;
   wallId?: number;
   isHovered?: boolean;
   isSelectable?: boolean;
