@@ -1,0 +1,154 @@
+/* src/features/simulation-setup/WallPlacementControls.css */
+.wall-placement-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.wall-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  border-left: 4px solid #6c757d;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-item.pending {
+  color: #856404;
+  font-weight: 600;
+}
+
+.stat-label {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.stat-value {
+  color: #495057;
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
+.wall-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.primary-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.secondary-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.wall-mode-toggle {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+.wall-mode-toggle:hover:not(:disabled) {
+  background-color: #5a6268 !important;
+}
+
+.wall-mode-toggle.active {
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+}
+
+.wall-mode-toggle.active:hover:not(:disabled) {
+  background-color: #218838 !important;
+}
+
+.save-walls-btn {
+  background-color: #007bff !important;
+  border-color: #007bff !important;
+}
+
+.save-walls-btn:hover:not(:disabled) {
+  background-color: #0056b3 !important;
+}
+
+.undo-btn {
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+  color: #212529 !important;
+  flex: 1;
+}
+
+.undo-btn:hover:not(:disabled) {
+  background-color: #e0a800 !important;
+  color: #212529 !important;
+}
+
+.clear-all-btn {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  flex: 1;
+}
+
+.clear-all-btn:hover:not(:disabled) {
+  background-color: #c82333 !important;
+}
+
+.wall-mode-tips {
+  background-color: #e7f3ff;
+  border: 1px solid #b3d7ff;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.wall-mode-tips h5 {
+  margin: 0 0 12px 0;
+  color: #0056b3;
+  font-size: 14px;
+}
+
+.wall-mode-tips ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.wall-mode-tips li {
+  color: #495057;
+  font-size: 13px;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.wall-mode-tips li:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .wall-placement-controls {
+    padding: 15px;
+  }
+  
+  .secondary-controls {
+    flex-direction: column;
+  }
+  
+  .undo-btn,
+  .clear-all-btn {
+    flex: none;
+  }
+}

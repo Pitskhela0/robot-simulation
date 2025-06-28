@@ -1,0 +1,72 @@
+/* src/features/simulation-setup/WallPlacementStep.css */
+.wall-placement-step {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.wall-placement-header h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+.wall-placement-header p {
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+.wall-placement-content {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.wall-controls-section {
+  flex: 1;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.wall-grid-preview {
+  flex: 2;
+  min-width: 400px;
+}
+
+.wall-grid-preview h4 {
+  margin-top: 0;
+  color: #495057;
+  margin-bottom: 15px;
+}
+
+.wall-mode-instruction {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.instruction-text {
+  color: #856404;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .wall-placement-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .wall-controls-section {
+    max-width: none;
+  }
+  
+  .wall-grid-preview {
+    min-width: auto;
+  }
+}

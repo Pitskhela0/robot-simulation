@@ -1,4 +1,4 @@
-// src/types/grid.ts (Enhanced)
+// src/types/grid.ts (Updated to include walls)
 import { RobotVersion } from './robot';
 
 export enum CellType {
@@ -6,7 +6,8 @@ export enum CellType {
   BASE_STATION = 'base_station',
   ROBOT = 'robot',
   WALL = 'wall',
-  TASK = 'task'
+  TASK = 'task',
+  PENDING_WALL = 'pending_wall'
 }
 
 export interface GridCellState {
@@ -20,6 +21,7 @@ export interface GridCellState {
   isSelectable?: boolean;
   isHighlighted?: boolean;
   isDisabled?: boolean;
+  isPending?: boolean;
 }
 
 export interface BaseStation {
@@ -42,4 +44,13 @@ export interface GridInteractionState {
   selectedCell?: GridPosition | null;
   hoveredCell?: GridPosition | null;
   disabled?: boolean;
+}
+
+export interface Wall {
+  id?: number;
+  simulation_id?: number;
+  x_position: number;
+  y_position: number;
+  type?: string;
+  created_at?: string;
 }
