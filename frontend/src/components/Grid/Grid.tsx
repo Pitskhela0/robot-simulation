@@ -1,7 +1,7 @@
-// src/components/Grid/Grid.tsx (Enhanced)
+// src/components/Grid/Grid.tsx (Enhanced with wall support)
 import React, { useState } from 'react';
 import GridCell from './GridCell';
-import { CellType, GridCellState, BaseStation } from '../../types/grid';
+import { CellType, GridCellState, BaseStation, Wall } from '../../types/grid';
 import { Robot } from '../../types/robot';
 import './Grid.css';
 
@@ -10,8 +10,11 @@ interface GridProps {
   height: number;
   baseStation?: BaseStation | null;
   robots?: Robot[];
+  walls?: Wall[];
+  pendingWalls?: Array<{ x_position: number; y_position: number }>;
   onCellClick: (x: number, y: number) => void;
   mode?: 'base_station' | 'robot' | 'wall' | 'task' | 'view';
+  disabled?: boolean;
 }
 
 const Grid: React.FC<GridProps> = ({ 
@@ -19,8 +22,11 @@ const Grid: React.FC<GridProps> = ({
   height, 
   baseStation, 
   robots = [], 
+  walls = [],
+  pendingWalls = [],
   onCellClick,
-  mode = 'view'
+  mode = 'view',
+  disabled = false
 }) => {
   const [hoveredCell, setHoveredCell] = useState<{x: number, y: number} | null>(null);
 
@@ -29,7 +35,7 @@ const Grid: React.FC<GridProps> = ({
     if (baseStation && baseStation.x === x && baseStation.y === y) {
       return {
         type: CellType.BASE_STATION,
-        isSelectable: mode === 'base_station'
+        isSelectable: mode === 'base_station' && !disabled
       };
     }
 
@@ -40,7 +46,28 @@ const Grid: React.FC<GridProps> = ({
         type: CellType.ROBOT,
         robotId: robot.id,
         robotVersion: robot.version,
+        robotColor: robot.color,
         isSelectable: false
+      };
+    }
+
+    // Check if this cell contains a wall
+    const wall = walls.find(w => w.x_position === x && w.y_position === y);
+    if (wall) {
+      return {
+        type: CellType.WALL,
+        wallId: wall.id,
+        isSelectable: mode === 'wall' && !disabled
+      };
+    }
+
+    // Check if this cell has a pending wall
+    const pendingWall = pendingWalls.find(w => w.x_position === x && w.y_position === y);
+    if (pendingWall) {
+      return {
+        type: CellType.PENDING_WALL,
+        isPending: true,
+        isSelectable: mode === 'wall' && !disabled
       };
     }
 
@@ -48,20 +75,26 @@ const Grid: React.FC<GridProps> = ({
     return {
       type: CellType.EMPTY,
       isHovered: hoveredCell?.x === x && hoveredCell?.y === y,
-      isSelectable: mode === 'base_station' || mode === 'robot'
+      isSelectable: (mode === 'base_station' || mode === 'robot' || mode === 'wall') && !disabled
     };
   };
 
   const handleCellClick = (x: number, y: number) => {
-    onCellClick(x, y);
+    if (!disabled) {
+      onCellClick(x, y);
+    }
   };
 
   const handleMouseEnter = (x: number, y: number) => {
-    setHoveredCell({ x, y });
+    if (!disabled) {
+      setHoveredCell({ x, y });
+    }
   };
 
   const handleMouseLeave = () => {
-    setHoveredCell(null);
+    if (!disabled) {
+      setHoveredCell(null);
+    }
   };
 
   const cells = [];
@@ -78,6 +111,7 @@ const Grid: React.FC<GridProps> = ({
           onClick={handleCellClick}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          disabled={disabled}
         />
       );
     }
@@ -87,8 +121,14 @@ const Grid: React.FC<GridProps> = ({
     '--grid-width': width,
   } as React.CSSProperties;
 
+  const gridClasses = [
+    'grid-container',
+    `grid-mode-${mode}`,
+    disabled ? 'grid-disabled' : ''
+  ].filter(Boolean).join(' ');
+
   return (
-    <div className={`grid-container grid-mode-${mode}`} style={gridStyle}>
+    <div className={gridClasses} style={gridStyle}>
       {cells}
     </div>
   );

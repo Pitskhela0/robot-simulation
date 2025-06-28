@@ -1,4 +1,4 @@
-// src/components/Grid/GridCell.tsx (Enhanced version)
+// src/components/Grid/GridCell.tsx (Enhanced with wall support)
 import React, { memo } from 'react';
 import { CellType, GridCellState } from '../../types/grid';
 import './GridCell.css';
@@ -48,6 +48,10 @@ const GridCell: React.FC<GridCellProps> = memo(({
       classes.push(`robot-${state.robotVersion.toLowerCase()}`);
     }
 
+    if (state.isPending) {
+      classes.push('cell-pending');
+    }
+
     if (disabled) {
       classes.push('cell-disabled');
     }
@@ -89,6 +93,8 @@ const GridCell: React.FC<GridCellProps> = memo(({
         );
       case CellType.WALL:
         return <span className="cell-icon wall-icon" title="Wall">⬛</span>;
+      case CellType.PENDING_WALL:
+        return <span className="cell-icon pending-wall-icon" title="Pending Wall">⬜</span>;
       case CellType.TASK:
         return <span className="cell-icon task-icon" title="Task">📋</span>;
       default:
@@ -106,6 +112,18 @@ const GridCell: React.FC<GridCellProps> = memo(({
     return style;
   };
 
+  const getCellTitle = () => {
+    let title = `Cell (${x}, ${y}) - ${state.type.replace('_', ' ')}`;
+    
+    if (disabled) {
+      title += ' (Disabled)';
+    } else if (state.isSelectable) {
+      title += ' (Click to interact)';
+    }
+    
+    return title;
+  };
+
   return (
     <div 
       className={getCellClassName()}
@@ -113,7 +131,7 @@ const GridCell: React.FC<GridCellProps> = memo(({
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      title={`Cell (${x}, ${y}) - ${state.type}${disabled ? ' (Disabled)' : ''}`}
+      title={getCellTitle()}
       role="button"
       tabIndex={state.isSelectable && !disabled ? 0 : -1}
       onKeyDown={(e) => {

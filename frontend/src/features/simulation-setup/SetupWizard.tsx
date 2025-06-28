@@ -1,9 +1,10 @@
-// src/features/simulation-setup/SetupWizard.tsx 
+// src/features/simulation-setup/SetupWizard.tsx (Updated with wall placement)
 import React, { useState } from 'react';
 import { useSimulation } from '../../context/SimulationContext';
 import GridSizeStep from './GridSizestep';
 import BaseStationStep from './BaseStationStep';
 import RobotConfigurationStep from './RobotConfigurationStep';
+import WallPlacementStep from './WallPlacementStep';
 import WizardNavigation from './WizardNavigation';
 import StepIndicator from './StepIndicator';
 import Grid from '../../components/Grid/Grid';
@@ -32,7 +33,7 @@ const WIZARD_STEPS = [
   {
     id: 4,
     title: 'Place Walls',
-    description: 'Add obstacles to the grid (Coming Soon)'
+    description: 'Add obstacles to the grid'
   },
   {
     id: 5,
@@ -87,8 +88,14 @@ const SetupWizard: React.FC = () => {
         break;
       
       case 4:
+        if (!baseStation) {
+          errors.push('Base station must be placed before placing walls');
+        }
+        // Walls are optional, so no validation required
+        break;
+      
       case 5:
-        // Future validation for walls and tasks
+        // Future validation for tasks
         break;
     }
     
@@ -157,13 +164,7 @@ const SetupWizard: React.FC = () => {
       case 3:
         return <RobotConfigurationStep />;
       case 4:
-        return (
-          <div className="coming-soon-step">
-            <h3>Wall Placement</h3>
-            <p>This feature will allow you to click on the grid to place walls and obstacles.</p>
-            <p><em>Coming in the next phase of development!</em></p>
-          </div>
-        );
+        return <WallPlacementStep />;
       case 5:
         return (
           <div className="coming-soon-step">
@@ -187,6 +188,7 @@ const SetupWizard: React.FC = () => {
     if (currentStep === 1) return true; // Validation handled in handleNext
     if (currentStep === 2) return baseStation !== null;
     if (currentStep === 3) return baseStation !== null && robots.length > 0;
+    if (currentStep === 4) return baseStation !== null; // Walls are optional
     return true;
   };
 
@@ -231,7 +233,7 @@ const SetupWizard: React.FC = () => {
           />
         </div>
 
-        {(currentStep === 1 || currentStep >= 4) && (
+        {(currentStep === 1 || currentStep >= 5) && (
           <div className="wizard-preview">
             <h4>Live Preview</h4>
             <div className="preview-info">
