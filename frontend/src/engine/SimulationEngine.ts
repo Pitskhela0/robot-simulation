@@ -226,7 +226,7 @@ export class SimulationEngine {
     }
   }
 
-  // Core Update Logic (to be implemented in next parts)
+  // Core Update Logic (basic implementation for Part 2)
   private async update(): Promise<void> {
     try {
       const now = new Date();
@@ -254,7 +254,7 @@ export class SimulationEngine {
     }
   }
 
-  // Data Loading Methods (to be implemented)
+  // Data Loading Methods (to be implemented in subsequent parts)
   private async loadSimulationData(): Promise<void> {
     this.logger.info('Loading simulation data...');
     
